@@ -254,13 +254,20 @@
   }
 
   const NICK_RE = /^[A-Za-z0-9_\- ]{2,20}$/;
+  const CALLSIGN_KEY = "cs_callsign";
   function nicknameForm(initial, onSaved, dismissible) {
     const input = h("input", { type: "text", id: "nick-input", maxlength: "20", autocomplete: "off", value: initial || "", placeholder: "e.g. GhostWriter" });
     const err = h("div", { class: "field-error", role: "alert" });
     const save = async (modal) => {
       const value = input.value.trim();
       if (!NICK_RE.test(value)) { err.textContent = "Use 2-20 characters: letters, numbers, spaces, - or _."; input.focus(); return true; }
-      try { const res = await api("/api/profile", { method: "POST", body: { nickname: value } }); setState(res.state); toast(`Welcome, ${value}.`, "success"); if (onSaved) onSaved(); }
+      try {
+        const res = await api("/api/profile", { method: "POST", body: { nickname: value } });
+        localStorage.setItem(CALLSIGN_KEY, value);
+        setState(res.state);
+        toast(`Welcome, ${value}.`, "success");
+        if (onSaved) onSaved();
+      }
       catch (e) { err.textContent = e.message; return true; }
     };
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $(".modal-actions .btn:last-child").click(); } });
@@ -269,6 +276,7 @@
   }
 
   function requireNickname() {
+    if (document.querySelector(".modal-backdrop")) return;
     const { content, save } = nicknameForm("", null, false);
     openModal({ title: "Choose your callsign", content, dismissible: false, actions: [{ label: "Begin training", onClick: save }] });
   }
@@ -366,7 +374,19 @@
     if (isApp) setupShell();
     try {
       const state = await loadState();
-      if (isApp && !state.profile.nickname) requireNickname();
+      if (isApp && !state.profile.nickname) {
+        const savedCallsign = localStorage.getItem(CALLSIGN_KEY);
+        if (savedCallsign && NICK_RE.test(savedCallsign)) {
+          try {
+            const res = await api("/api/profile", { method: "POST", body: { nickname: savedCallsign } });
+            setState(res.state);
+          } catch (_err) {
+            requireNickname();
+          }
+        } else {
+          requireNickname();
+        }
+      }
     } catch (err) {
       if (isApp) toast(err.message, "error", "SERVER OFFLINE");
       CS.loadError = err;
