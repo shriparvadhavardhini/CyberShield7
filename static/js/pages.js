@@ -4,6 +4,9 @@
   const { api, h, toast, reward, onState, animateBars, fmtDate, loader, showError } = window.CS;
   const root = document.getElementById("view");
   const view = root.dataset.view;
+  // replaceChildren() only accepts single nodes. Arrays (from .map()) and null would be
+  // printed as text like "[object HTMLDivElement]" or "null", so flatten and drop empties first.
+  const show = (...items) => root.replaceChildren(...items.flat(Infinity).filter((x) => x !== null && x !== undefined && x !== false));
   const bar = (p) => h("div", { class: "progress" }, h("span", { "data-progress": p }));
   const head = (t, s) => h("div", { class: "page-head" }, h("h1", { text: t }), h("p", { text: s }));
   const stat = (l, v) => h("div", { class: "panel" }, h("div", { class: "label", text: l }), h("div", { class: "stat", text: v }));
@@ -17,7 +20,7 @@
     const d = s.daily, st = s.stats;
     const claim = h("button", { class: "btn btn-sm", disabled: d.completed || !d.ready, onclick: async () => {
       try { reward(await api("/api/daily/complete", { method: "POST", body: {} })); } catch (e) { toast(e.message, "error"); } } }, d.completed ? "Done" : "Claim reward");
-    root.replaceChildren(head(`Welcome, ${s.profile.nickname || "Operative"}`, `Rank ${s.level.name} · ${s.profile.xp} XP`),
+    show(head(`Welcome, ${s.profile.nickname || "Operative"}`, `Rank ${s.level.name} · ${s.profile.xp} XP`),
       h("div", { class: "grid cards" }, stat("XP", st.xp), stat("Streak (days)", st.streak), stat("Modules", `${st.modules_done}/${st.modules_total}`),
         stat("Labs", `${st.labs_done}/${st.labs_total}`), stat("Quiz average", st.quiz_avg === null ? "-" : st.quiz_avg + "%"), stat("Completion", st.completion + "%")),
       h("div", { class: "panel", style: "margin-top:1.5rem" }, h("div", { class: "panel-title", text: "Next rank" }), bar(s.level.percent),
@@ -36,21 +39,21 @@
     const grid = h("div", { class: "grid cards" });
     const draw = (cat) => grid.replaceChildren(...s.modules.filter((m) => !cat || m.category === cat).map(modCard));
     const sel = h("select", { id: "cat", "aria-label": "Filter by category", onchange: (e) => draw(e.target.value) }, h("option", { value: "", text: "All categories" }), cats.map((c) => h("option", { value: c, text: c })));
-    root.replaceChildren(head("Security Academy", "12 lessons. Pass each quiz (60%+) to earn XP."), h("div", { class: "field", style: "max-width:300px" }, sel), grid);
+    show(head("Security Academy", "12 lessons. Pass each quiz (60%+) to earn XP."), h("div", { class: "field", style: "max-width:300px" }, sel), grid);
     draw("");
   }
 
   async function lesson() {
-    root.replaceChildren(loader());
+    show(loader());
     const slug = root.dataset.slug;
     let data;
     try { data = await api("/api/modules/" + slug); api("/api/modules/" + slug + "/open", { method: "POST", body: {} }).catch(() => {}); }
     catch (e) { return showError(root, e.message); }
     const m = data.module, les = data.lesson;
-    if (!les) return root.replaceChildren(head(m.title, m.summary), h("div", { class: "state-box", text: "Lesson text is not available yet." }));
+    if (!les) return show(head(m.title, m.summary), h("div", { class: "state-box", text: "Lesson text is not available yet." }));
     const qs = Array.isArray(les.quiz) ? les.quiz : [];
     if (!qs.length) {
-      return root.replaceChildren(head(m.title, m.summary),
+      return show(head(m.title, m.summary),
         les.sections.map((x) => h("div", { class: "panel", style: "margin-bottom:1rem" }, h("h3", { text: x.h }), h("p", { text: x.p }))),
         h("div", { class: "state-box", text: "Quiz is unavailable for this lesson." }));
     }
@@ -68,7 +71,7 @@
       try { const res = await api(`/api/modules/${slug}/complete`, { method: "POST", body: { correct, total: qs.length } });
         reward(res); result.textContent = ""; toast(`Score ${correct}/${qs.length}. Module complete.`, "success"); }
       catch (e) { result.textContent = `Score ${correct}/${qs.length}. ` + e.message + " Reload to retry."; } } }, "Submit quiz");
-    root.replaceChildren(h("a", { href: "/academy" }, "< Academy"), head(m.title, `${m.category} · ${m.minutes} min · ${m.xp} XP`),
+    show(h("a", { href: "/academy" }, "< Academy"), head(m.title, `${m.category} · ${m.minutes} min · ${m.xp} XP`),
       les.sections.map((x) => h("div", { class: "panel", style: "margin-bottom:1rem" }, h("h3", { text: x.h }), h("p", { text: x.p }))),
       h("h2", { text: `Quiz // ${qs.length} Questions` }), quiz, submit, result,
       h("div", { class: "row", style: "margin-top:1.5rem" }, data.prev ? h("a", { class: "btn btn-ghost btn-sm", href: "/academy/" + data.prev.slug }, "Prev") : null,
@@ -76,7 +79,7 @@
   }
 
   function achievements(s) {
-    root.replaceChildren(head("Achievements", `${s.stats.achievements}/${s.stats.achievements_total} unlocked · each badge gives bonus XP`),
+    show(head("Achievements", `${s.stats.achievements}/${s.stats.achievements_total} unlocked · each badge gives bonus XP`),
       h("div", { class: "grid cards" }, s.achievements.map((a) => h("div", { class: "panel" + (a.unlocked ? "" : " locked") },
         h("h3", { text: a.name }), h("p", { class: "muted", text: a.desc }), bar(Math.round(a.current / a.target * 100)),
         h("div", { class: "label", text: a.unlocked ? "UNLOCKED" : `${a.current}/${a.target}` })))),
@@ -86,10 +89,10 @@
   }
 
   async function progress() {
-    root.replaceChildren(loader());
+    show(loader());
     let d; try { d = await api("/api/progress"); } catch (e) { return showError(root, e.message, progress); }
     const max = Math.max(1, ...d.xp_per_day.map((x) => x.xp));
-    root.replaceChildren(head("Progress", `${d.state.stats.completion}% of the learning path complete`),
+    show(head("Progress", `${d.state.stats.completion}% of the learning path complete`),
       h("div", { class: "panel" }, h("div", { class: "panel-title", text: "XP, last 14 days" }),
         h("div", { class: "bars", role: "img", "aria-label": "XP per day" }, d.xp_per_day.map((x) => h("span", { title: `${x.date}: ${x.xp} XP`, style: `height:${x.xp / max * 100}%` })))),
       h("div", { class: "panel", style: "margin-top:1.5rem" }, h("div", { class: "panel-title", text: "By category" }),
@@ -101,13 +104,13 @@
   }
 
   function about() {
-    root.replaceChildren(head("About CyberShield", "Learn. Exploit. Defend."),
+    show(head("About CyberShield", "Learn. Exploit. Defend."),
       h("div", { class: "panel" }, h("p", { text: "CyberShield is a local learning platform for web application security. Everything runs on your computer with Flask and SQLite; progress is stored in a local file." }),
         h("p", { text: "Nothing here attacks, scans or contacts real systems. Practise security testing only on systems you own or have written permission to test." })));
   }
 
   const views = { dashboard: () => onState(dashboard), academy: () => onState(academy), achievements: () => onState(achievements), lesson, progress, about };
-  root.replaceChildren(loader());
+  show(loader());
   (views[view] || about)();
   if (["about"].includes(view)) about();
 })();
