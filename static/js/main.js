@@ -255,6 +255,14 @@
 
   const NICK_RE = /^[A-Za-z0-9_\- ]{2,20}$/;
   const CALLSIGN_KEY = "cs_callsign";
+  function getSavedCallsign() {
+    try { return localStorage.getItem(CALLSIGN_KEY) || ""; }
+    catch (_err) { return ""; }
+  }
+  function saveCallsign(value) {
+    try { localStorage.setItem(CALLSIGN_KEY, value); }
+    catch (_err) { /* Storage may be unavailable in private browser modes. */ }
+  }
   function nicknameForm(initial, onSaved, dismissible) {
     const input = h("input", { type: "text", id: "nick-input", maxlength: "20", autocomplete: "off", value: initial || "", placeholder: "e.g. GhostWriter" });
     const err = h("div", { class: "field-error", role: "alert" });
@@ -263,7 +271,7 @@
       if (!NICK_RE.test(value)) { err.textContent = "Use 2-20 characters: letters, numbers, spaces, - or _."; input.focus(); return true; }
       try {
         const res = await api("/api/profile", { method: "POST", body: { nickname: value } });
-        localStorage.setItem(CALLSIGN_KEY, value);
+        saveCallsign(value);
         setState(res.state);
         toast(`Welcome, ${value}.`, "success");
         if (onSaved) onSaved();
@@ -375,13 +383,14 @@
     try {
       const state = await loadState();
       if (isApp && !state.profile.nickname) {
-        const savedCallsign = localStorage.getItem(CALLSIGN_KEY);
+        const savedCallsign = getSavedCallsign();
         if (savedCallsign && NICK_RE.test(savedCallsign)) {
           try {
             const res = await api("/api/profile", { method: "POST", body: { nickname: savedCallsign } });
             setState(res.state);
           } catch (_err) {
-            requireNickname();
+            const restored = { ...state, profile: { ...state.profile, nickname: savedCallsign } };
+            setState(restored);
           }
         } else {
           requireNickname();
