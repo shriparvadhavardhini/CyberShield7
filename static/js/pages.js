@@ -48,7 +48,13 @@
     catch (e) { return showError(root, e.message); }
     const m = data.module, les = data.lesson;
     if (!les) return root.replaceChildren(head(m.title, m.summary), h("div", { class: "state-box", text: "Lesson text is not available yet." }));
-    const qs = les.quiz, answers = new Array(qs.length).fill(null);
+    const qs = Array.isArray(les.quiz) ? les.quiz : [];
+    if (!qs.length) {
+      return root.replaceChildren(head(m.title, m.summary),
+        les.sections.map((x) => h("div", { class: "panel", style: "margin-bottom:1rem" }, h("h3", { text: x.h }), h("p", { text: x.p }))),
+        h("div", { class: "state-box", text: "Quiz is unavailable for this lesson." }));
+    }
+    const answers = new Array(qs.length).fill(null);
     const result = h("div", { class: "field-error" });
     const quiz = qs.map((q, i) => {
       const box = h("div", { class: "panel", style: "margin:1rem 0" }, h("h3", { text: `${i + 1}. ${q.q}` }));
@@ -64,7 +70,7 @@
       catch (e) { result.textContent = `Score ${correct}/${qs.length}. ` + e.message + " Reload to retry."; } } }, "Submit quiz");
     root.replaceChildren(h("a", { href: "/academy" }, "< Academy"), head(m.title, `${m.category} · ${m.minutes} min · ${m.xp} XP`),
       les.sections.map((x) => h("div", { class: "panel", style: "margin-bottom:1rem" }, h("h3", { text: x.h }), h("p", { text: x.p }))),
-      h("h2", { text: "Quiz" }), quiz, submit, result,
+      h("h2", { text: `Quiz // ${qs.length} Questions` }), quiz, submit, result,
       h("div", { class: "row", style: "margin-top:1.5rem" }, data.prev ? h("a", { class: "btn btn-ghost btn-sm", href: "/academy/" + data.prev.slug }, "Prev") : null,
         data.next ? h("a", { class: "btn btn-ghost btn-sm", href: "/academy/" + data.next.slug }, "Next") : null));
   }
