@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block title %}{{ module.title }}{% endblock %}
+{% block content %}<div id="view" data-view="lesson" data-slug="{{ module.slug }}"></div>{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/pages.js') }}"></script>{% endblock %}

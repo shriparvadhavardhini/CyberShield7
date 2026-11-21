@@ -1,0 +1,88 @@
+{# ===========================================================================
+   base.html - the app shell (sidebar + top bar) shared by every inner page.
+   Child pages fill in the blocks: title, head, content and scripts.
+   =========================================================================== #}
+{% from "_icons.html" import icon, logo %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CYBERSHIELD{% endblock %} // CyberShield x HackLab</title>
+  <meta name="description" content="CyberShield: an interactive web application security learning platform. Learn. Exploit. Defend.">
+  <link rel="icon" href="{{ url_for('static', filename='assets/images/favicon.svg') }}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  {% block head %}{% endblock %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body data-shell="app" data-page="{{ page }}">
+  <canvas id="bg-particles" aria-hidden="true"></canvas>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Primary">
+      <a class="brand" href="/" aria-label="CyberShield home">
+        {{ logo() }}<span>CYBERSHIELD<small>HACKLAB // v1.0</small></span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        {% set items = [
+          ("dashboard", "Dashboard", "/dashboard"),
+          ("academy", "Security Academy", "/academy"),
+          ("hacklab", "HackLab", "/hacklab"),
+          ("challenges", "Challenges", "/challenges"),
+          ("achievements", "Achievements", "/achievements"),
+          ("progress", "Progress", "/progress") ] %}
+        {% for key, label, url in items %}
+          <a href="{{ url }}" {% if page == key %}aria-current="page"{% endif %}>{{ icon(key) }}<span>{{ label }}</span></a>
+        {% endfor %}
+        <button type="button" id="open-settings">{{ icon("settings") }}<span>Settings</span></button>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="mini-level">
+          <div class="label"><span data-bind="level">ROOKIE</span> <span class="muted">//</span> <span data-bind="xp">0 XP</span></div>
+          <div class="progress" style="margin:.5rem 0"><span id="mini-xp-bar"></span></div>
+          <div class="label" id="mini-xp-text">LOADING...</div>
+        </div>
+        <nav class="nav" aria-label="Secondary">
+          <a href="/" >{{ icon("home") }}<span>Home page</span></a>
+          <a href="/about" {% if page == "about" %}aria-current="page"{% endif %}>{{ icon("about") }}<span>About</span></a>
+        </nav>
+        <div class="label"><span class="status-dot"></span> SYSTEM ONLINE</div>
+      </div>
+    </aside>
+    <div class="sidebar-scrim"></div>
+
+    <div class="app-main">
+      <header class="topbar">
+        <button type="button" class="btn-icon menu-btn" id="menu-btn" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">{{ icon("menu") }}</button>
+        <div class="search" role="search">
+          {{ icon("search") }}
+          <label for="search-input" class="sr-only">Search lessons, labs and challenges</label>
+          <input type="search" id="search-input" placeholder="Search lessons, labs, challenges  ( / )" autocomplete="off">
+          <div class="search-results" id="search-results" hidden></div>
+        </div>
+        <div class="topbar-right">
+          <button type="button" class="btn-icon notif-dot" id="notif-btn" aria-label="Notifications" data-count="0">{{ icon("bell") }}</button>
+          <button type="button" class="profile-chip" id="open-profile" aria-label="Open operative profile">
+            <span class="avatar" data-bind="avatar">?</span>
+            <span class="chip-text"><b data-bind="nickname">OPERATIVE</b><small><span data-bind="level">ROOKIE</span> &middot; <span data-bind="xp">0 XP</span></small></span>
+          </button>
+        </div>
+      </header>
+
+      <main id="main" class="page page-enter" tabindex="-1">
+        {% block content %}{% endblock %}
+      </main>
+      <footer class="footer-note">CyberShield &middot; Educational use only &middot; All HackLab environments are simulated and never touch real systems.</footer>
+    </div>
+  </div>
+
+  <div id="toast-root" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

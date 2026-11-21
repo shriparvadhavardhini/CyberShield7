@@ -1,0 +1,28 @@
+/* ==========================================================================
+   RESPONSIVE RULES for the app shell (sidebar becomes a drawer on tablets
+   and phones). Page-specific breakpoints live in each page's own CSS file.
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .app-shell { grid-template-columns: minmax(0, 1fr); }
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; width: min(300px, 86vw); transform: translateX(-102%);
+    transition: transform .3s ease; box-shadow: 10px 0 40px rgba(0, 0, 0, .6);
+  }
+  body.sidebar-open .sidebar { transform: none; }
+  body.sidebar-open { overflow: hidden; }
+  .sidebar-scrim { display: block; position: fixed; inset: 0; z-index: 55; background: rgba(3, 5, 7, .7); opacity: 0; pointer-events: none; transition: opacity .3s; }
+  body.sidebar-open .sidebar-scrim { opacity: 1; pointer-events: auto; }
+  .menu-btn { display: inline-grid; }
+}
+@media (max-width: 640px) {
+  :root { --topbar-h: 60px; }
+  .topbar { gap: .5rem; padding-inline: .75rem; }
+  .chip-text { display: none; }
+  .profile-chip { padding: .25rem; border-radius: 50%; }
+  .search { max-width: none; }
+  .btn { width: auto; }
+  .modal { padding: 1.1rem; }
+  .modal-actions .btn { flex: 1 1 100%; }
+  #toast-root { left: .75rem; right: .75rem; bottom: .75rem; width: auto; }
+  .page { padding: .9rem; }
+}

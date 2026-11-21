@@ -1,0 +1,209 @@
+{% from "_icons.html" import logo %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CYBERSHIELD x HACKLAB // Learn. Exploit. Defend.</title>
+  <meta name="description" content="CyberShield is an interactive web application security training platform with safe, simulated labs.">
+  <link rel="icon" href="{{ url_for('static', filename='assets/images/favicon.svg') }}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body data-shell="landing" data-page="landing">
+  <canvas id="bg-particles" aria-hidden="true"></canvas>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ===================== NAVIGATION ===================== -->
+  <header class="site-nav">
+    <a class="brand" href="/" aria-label="CyberShield home">{{ logo() }}<span>CYBERSHIELD<small>HACKLAB</small></span></a>
+    <button type="button" class="btn-icon nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <nav class="nav-links" id="nav-links" aria-label="Primary">
+      <a href="/" aria-current="page">HOME</a>
+      <a href="/academy">ACADEMY</a>
+      <a href="/hacklab">HACKLAB</a>
+      <a href="/challenges">CHALLENGES</a>
+      <a href="/about">ABOUT</a>
+    </nav>
+    <div class="nav-right">
+      <span class="sys-status label"><span class="status-dot"></span> SYSTEM ONLINE</span>
+      <a class="btn btn-sm" href="/dashboard">Enter Dashboard</a>
+    </div>
+  </header>
+
+  <main id="main" class="landing-main page-enter" tabindex="-1">
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="label glow-cyan"><span class="status-dot"></span> TRAINING FACILITY // SIMULATED ENVIRONMENT</p>
+        <h1 id="hero-title">THE WEB IS YOUR <span class="glitch glow-green" data-text="BATTLEFIELD">BATTLEFIELD</span>.</h1>
+        <p class="hero-sub">Every vulnerability has a story.<br>Learn to find it before someone else does.</p>
+        <div class="hero-cta">
+          <a class="btn" href="/dashboard">Start training</a>
+          <a class="btn btn-ghost btn-cyan" href="/hacklab">Enter HackLab</a>
+        </div>
+        <p class="tagline mono">LEARN. EXPLOIT. DEFEND.</p>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <svg class="hud" viewBox="0 0 400 400" role="img" aria-label="Animated shield and radar graphic">
+          <defs>
+            <radialGradient id="sweep-fade" cx="0%" cy="0%" r="100%"><stop offset="0%" stop-color="#B6FF00" stop-opacity=".45"/><stop offset="100%" stop-color="#B6FF00" stop-opacity="0"/></radialGradient>
+          </defs>
+          <g fill="none" stroke="rgba(182,255,0,.25)">
+            <circle cx="200" cy="200" r="190"/><circle cx="200" cy="200" r="150"/><circle cx="200" cy="200" r="110"/>
+            <path d="M200 10v380M10 200h380" stroke-dasharray="3 7"/>
+          </g>
+          <g class="hud-ring ring-a" fill="none" stroke="#00E5FF" stroke-width="2"><circle cx="200" cy="200" r="178" stroke-dasharray="40 24 6 24"/></g>
+          <g class="hud-ring ring-b" fill="none" stroke="#B6FF00" stroke-width="1.5"><circle cx="200" cy="200" r="132" stroke-dasharray="2 10"/></g>
+          <g class="radar-sweep"><path d="M200 200L200 10A190 190 0 0 1 335 65Z" fill="url(#sweep-fade)"/><line x1="200" y1="200" x2="200" y2="10" stroke="#B6FF00" stroke-width="1.5"/></g>
+          <g class="blips" fill="#FF365E"><circle cx="290" cy="120" r="4"/><circle cx="120" cy="260" r="3.500"/><circle cx="300" cy="280" r="3"/></g>
+          <g class="shield">
+            <path d="M200 120l58 20v50c0 38-24 64-58 80-34-16-58-42-58-80v-50z" fill="rgba(182,255,0,.08)" stroke="#B6FF00" stroke-width="3"/>
+            <path d="M200 140l40 14v36c0 26-16 44-40 56-24-12-40-30-40-56v-36z" fill="none" stroke="#00E5FF" stroke-width="1.500"/>
+            <path d="M180 196l14 14 28-30" fill="none" stroke="#B6FF00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <g fill="none" stroke="rgba(0,229,255,.5)" stroke-width="1"><path d="M30 60h50l12 12h40M370 340h-50l-12-12h-40M30 340h30l10-10M370 60h-30l-10 10"/></g>
+        </svg>
+
+        <div class="terminal hero-terminal">
+          <div class="terminal-bar"><i></i><i></i><i></i><span>cybershield@boot:~</span></div>
+          <div class="terminal-body cursor" id="boot-log" aria-live="off"></div>
+        </div>
+      </div>
+
+      <a class="scroll-hint label" href="#threats" aria-label="Scroll to threat overview"><span></span>SCROLL</a>
+    </section>
+
+    <!-- ===================== THREAT OVERVIEW ===================== -->
+    <section class="band" id="threats" aria-labelledby="threat-title">
+      <p class="label glow-cyan">THREAT OVERVIEW</p>
+      <h2 id="threat-title">THE DIGITAL WORLD ISN'T SAFE.</h2>
+      <p class="band-lead">Every login form, comment box and file upload is a door. Defenders learn where the doors are and which ones are unlocked.</p>
+      <div class="stats-row">
+        <div class="stat panel"><b class="count" data-count="4" data-pad="2">00</b><span class="label">Critical threat categories</span></div>
+        <div class="stat panel"><b class="count" data-count="12" data-pad="2">00</b><span class="label">Training modules</span></div>
+        <div class="stat panel"><b class="count" data-count="6" data-pad="2">00</b><span class="label">Interactive HackLab missions</span></div>
+        <div class="stat panel"><b class="count" data-count="100" data-suffix="%">0%</b><span class="label">Hands-on learning</span></div>
+      </div>
+      <p class="fine mono">// Figures describe this platform's curriculum. They are sample values, not real-world threat statistics.</p>
+    </section>
+
+    <!-- ===================== VULNERABILITY CARDS ===================== -->
+    <section class="band" id="vulnerabilities" aria-labelledby="vuln-title">
+      <p class="label glow-cyan">KNOWN WEAKNESSES</p>
+      <h2 id="vuln-title">SIX WAYS WEB APPS BREAK.</h2>
+      <p class="band-lead">Pick a threat to open its learning module. Each one ends with a quiz and XP.</p>
+      <div class="vuln-grid">
+        {% set cards = [
+          ("sql-injection", "SQL Injection", "CRITICAL", "Untrusted input rewrites a database query. One login box can expose an entire user table.", "db"),
+          ("xss", "Cross-Site Scripting (XSS)", "HIGH", "Attacker-controlled text runs as code inside another person's browser session.", "code"),
+          ("csrf", "Cross-Site Request Forgery", "HIGH", "A malicious page makes your logged-in browser perform actions you never chose.", "swap"),
+          ("access-control", "Broken Access Control", "CRITICAL", "The app forgets to check who is allowed to do what, and ordinary users reach admin data.", "lock"),
+          ("auth-sessions", "Authentication Failures", "HIGH", "Weak logins and unprotected sessions let someone else become you.", "key"),
+          ("security-headers", "Security Misconfiguration", "MEDIUM", "Missing headers and risky defaults leave safe software running unsafely.", "gear") ] %}
+        {% for slug, name, sev, desc, ic in cards %}
+        <a class="vuln-card panel" href="/academy/{{ slug }}" aria-label="Open the {{ name }} module">
+          <span class="vuln-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              {% if ic == "db" %}<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.700 3.600 3 8 3s8-1.300 8-3V5M4 12c0 1.700 3.600 3 8 3s8-1.300 8-3"/>
+              {% elif ic == "code" %}<path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/>
+              {% elif ic == "swap" %}<path d="M4 8h14l-3-3M20 16H6l3 3"/>
+              {% elif ic == "lock" %}<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>
+              {% elif ic == "key" %}<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/>
+              {% else %}<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>{% endif %}
+            </svg>
+          </span>
+          <span class="badge sev-{{ sev|lower }}">{{ sev }}</span>
+          <h3>{{ name }}</h3>
+          <p>{{ desc }}</p>
+          <span class="explore label">Explore module</span>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- ===================== HOW IT WORKS ===================== -->
+    <section class="band" id="how" aria-labelledby="how-title">
+      <p class="label glow-cyan">TRAINING LOOP</p>
+      <h2 id="how-title">HOW IT WORKS</h2>
+      <ol class="steps">
+        <li class="panel"><span class="step-n mono">01</span><h3>LEARN</h3><p>Understand the vulnerability in plain language with a realistic fictional example.</p></li>
+        <li class="panel"><span class="step-n mono">02</span><h3>EXPLORE</h3><p>See how it works in a safe simulation that never touches a real system.</p></li>
+        <li class="panel"><span class="step-n mono">03</span><h3>DEFEND</h3><p>Study the fix and compare vulnerable code with its secure version.</p></li>
+        <li class="panel"><span class="step-n mono">04</span><h3>MASTER</h3><p>Prove it in quizzes, code reviews and case files. Earn XP and badges.</p></li>
+      </ol>
+    </section>
+
+    <!-- ===================== HACKLAB PREVIEW ===================== -->
+    <section class="band lab-preview" id="hacklab" aria-labelledby="lab-title">
+      <div class="lab-copy">
+        <p class="label glow-cyan">VIRTUAL LABORATORY</p>
+        <h2 id="lab-title">ENTER THE LAB.</h2>
+        <p>Break down vulnerabilities. Understand the logic. Learn to build stronger defenses.</p>
+        <ul class="lab-list">
+          {% for lab in labs %}<li><span class="mono glow-green">{{ lab.codename }}</span> {{ lab.title }} <span class="badge badge-muted">{{ lab.xp }} XP</span></li>{% endfor %}
+        </ul>
+        <a class="btn" href="/hacklab">Initialize HackLab</a>
+      </div>
+      <div class="terminal lab-mock" aria-hidden="true">
+        <div class="terminal-bar"><i></i><i></i><i></i><span>hacklab // lab 01 // authentication breach</span></div>
+        <div class="terminal-body">
+<span class="t-dim">mission&gt;</span> Observe how the login query is built
+<span class="t-info">[SIM]</span> mode = <span class="t-err">VULNERABLE</span>
+<span class="t-info">[SIM]</span> input is concatenated into SQL text
+<span class="t-warn">[WARN]</span> user input changed the query's logic
+<span class="t-dim">mission&gt;</span> switch mode: <span class="t-ok">SECURE</span>
+<span class="t-ok">[OK]</span> parameterized query: input treated as data
+<span class="t-ok">[+100 XP]</span> objective complete
+<span class="t-dim">SIMULATION ONLY - NO REAL SYSTEMS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ROADMAP ===================== -->
+    <section class="band" id="roadmap" aria-labelledby="road-title">
+      <p class="label glow-cyan">PROGRESSION</p>
+      <h2 id="road-title">SECURITY LEARNING ROADMAP</h2>
+      <p class="band-lead">Earn XP in lessons, labs and challenges to rank up. Your progress is saved locally.</p>
+      <ol class="roadmap">
+        <li class="panel" data-level="ROOKIE"><span class="badge badge-green">0 XP</span><h3>ROOKIE</h3><p>Learn the basics. Badge: <b>FIRST ACCESS</b></p><div class="progress"><span data-fill></span></div></li>
+        <li class="panel" data-level="ANALYST"><span class="badge badge-green">500 XP</span><h3>ANALYST</h3><p>Recognise common flaws. Badge: <b>BUG HUNTER</b></p><div class="progress"><span data-fill></span></div></li>
+        <li class="panel" data-level="DEFENDER"><span class="badge badge-green">1500 XP</span><h3>DEFENDER</h3><p>Apply the fixes. Badge: <b>IRON WALL</b></p><div class="progress"><span data-fill></span></div></li>
+        <li class="panel" data-level="GUARDIAN"><span class="badge badge-green">3000 XP</span><h3>GUARDIAN</h3><p>Complete the full path. Badge: <b>CYBER GUARDIAN</b></p><div class="progress"><span data-fill></span></div></li>
+      </ol>
+      <p class="fine mono">// Beyond GUARDIAN waits one more rank: ELITE at 5000 XP.</p>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="/">{{ logo() }}<span>CYBERSHIELD<small>HACKLAB</small></span></a>
+        <p class="mono glow-green">Learn. Exploit. Defend.</p>
+      </div>
+      <nav aria-label="Footer">
+        <h3 class="label">NAVIGATE</h3>
+        <a href="/academy">Academy</a><a href="/hacklab">HackLab</a><a href="/challenges">Challenges</a><a href="/progress">Progress</a><a href="/about">About</a>
+      </nav>
+      <div>
+        <h3 class="label">ABOUT THE PROJECT</h3>
+        <p>A Web Application Security microcredential project built with HTML, CSS, JavaScript, Flask and SQLite.</p>
+      </div>
+    </div>
+    <p class="disclaimer mono">EDUCATIONAL USE ONLY. All labs and scans are local simulations. CyberShield never attacks, scans or contacts real websites, networks or accounts. Only practice security testing on systems you own or have written permission to test.</p>
+  </footer>
+
+  <div id="toast-root" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+</body>
+</html>
