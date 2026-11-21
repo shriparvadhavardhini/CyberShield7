@@ -6,12 +6,16 @@ The database file lives at instance/cybershield.db and is created
 automatically the first time the app starts.
 """
 import sqlite3
+import os
 from pathlib import Path
 
 import content
 
 BASE_DIR = Path(__file__).resolve().parent
-INSTANCE_DIR = BASE_DIR / "instance"
+if os.getenv("VERCEL"):
+    INSTANCE_DIR = Path("/tmp")
+else:
+    INSTANCE_DIR = BASE_DIR / "instance"
 DB_PATH = INSTANCE_DIR / "cybershield.db"
 
 # ---------------------------------------------------------------------------
