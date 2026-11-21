@@ -1,4 +1,31 @@
 {% extends "base.html" %}
 {% block title %}{{ module.title }}{% endblock %}
-{% block content %}<div id="view" data-view="lesson" data-slug="{{ module.slug }}"></div>{% endblock %}
-{% block scripts %}<script src="{{ url_for('static', filename='js/pages.js') }}"></script>{% endblock %}
+{% block content %}
+<div id="view" data-view="lesson" data-slug="{{ module.slug }}">
+  <a href="/academy">&lt; Academy</a>
+  <div class="page-head">
+    <h1>{{ module.title }}</h1>
+    <p>{{ module.category }} · {{ module.minutes }} min · {{ module.xp }} XP</p>
+  </div>
+  {% if lesson %}
+    {% for section in lesson.sections %}
+      <div class="panel" style="margin-bottom:1rem">
+        <h3>{{ section.h }}</h3>
+        <p>{{ section.p }}</p>
+      </div>
+    {% endfor %}
+    <h2>Quiz // {{ lesson.quiz|length }} Questions</h2>
+    {% for question in lesson.quiz %}
+      <div class="panel" style="margin:1rem 0">
+        <h3>{{ loop.index }}. {{ question.q }}</h3>
+        {% for option in question.options %}
+          <button type="button" class="opt">{{ option }}</button>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="state-box">Quiz is unavailable for this lesson.</div>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/pages.js') }}?v=20261121"></script>{% endblock %}

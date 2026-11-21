@@ -305,6 +305,10 @@ def require_json_for_writes():
 
 @app.after_request
 def add_security_headers(resp):
+    if request.path.startswith("/static/") or request.path.startswith("/academy/"):
+        resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        resp.headers["Pragma"] = "no-cache"
+        resp.headers["Expires"] = "0"
     resp.headers["Content-Security-Policy"] = (
         "default-src 'self'; script-src 'self'; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
@@ -339,7 +343,8 @@ def lesson(slug):
     module = MODULE_BY_SLUG.get(slug)
     if module is None:
         abort(404)
-    return render_template("lesson.html", page="academy", module=module)
+    return render_template("lesson.html", page="academy", module=module,
+                           lesson=LESSONS.get(slug))
 
 
 @app.route("/hacklab")
